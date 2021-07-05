@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  api:
+    build: api
+    container_name: "openapi-api"
+    networks:
+      test_link:
+        aliases:
+          - local.api
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: "openapi-ui"
+    volumes:
+      - ./api/openapi/openapi.yaml:/openapi.yaml
+    environment:
+      SWAGGER_JSON: /openapi.yaml
+    networks:
+      test_link:
+        aliases:
+          - local.ui
+  nginx:
+    image: nginx:mainline-alpine
+    container_name: "openapi-nginx"
+    ports:
+      - "20000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      test_link:
+        aliases:
+          - local.nginx
+networks:
+  test_link:
+    external: true
